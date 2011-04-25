@@ -7,12 +7,21 @@ IRB.conf[:LOAD_MODULES] += ['irb/completion', 'irb/ext/save-history']
 
 IRB.conf[:PROMPT_MODE] = :SIMPLE
 
-%w[rubygems looksee/shortcuts wirble].each do |gem|
+# load gems
+%w[rubygems ap].each do |gem|
   begin
     require gem
   rescue LoadError
   end
 end
+
+# colorize output
+IRB::Irb.class_eval do
+  def output_value
+    ap @context.last_value, :multiline => false
+  end
+end
+
 
 class Object
   # list methods which aren't in superclass
@@ -33,10 +42,32 @@ class Object
     end
     system 'ri', method.to_s
   end
+  # clipboard
+  def copy(str)
+    IO.popen('xclip -i', 'w') { |f| f << str.to_s }
+  end
+  def paste
+    `xclip -o`
+  end
+end
+# sql query loging
+if defined? Rails
+  require 'logger'
+  ActiveRecord::Base.logger = Logger.new(STDOUT)
+  # somehow ar 2.3.5 on my laptop didn't catch up logger but on desktop all is ok ...
+  ActiveRecord::Base.connection.instance_eval {@logger = ActiveRecord::Base.logger}
+end
+def change_log(stream)
+  ActiveRecord::Base.logger = Logger.new(stream)
+  ActiveRecord::Base.clear_active_connections!
 end
 
-def copy(str)
-  IO.popen('pbcopy', 'w') { |f| f << str.to_s }
+def show_log
+  change_log(STDOUT)
+end
+
+def hide_log
+  change_log(nil)
 end
 
 def copy_history
@@ -47,8 +78,4 @@ def copy_history
   copy content
 end
 
-def paste
-  `pbpaste`
-end
-
-load File.dirname(__FILE__) + '/.railsrc' if ($0 == 'irb' && ENV['RAILS_ENV']) || ($0 == 'script/rails' && Rails.env)
+# load File.dirname(__FILE__) + '/.railsrc' if ($0 == 'irb' && ENV['RAILS_ENV']) || ($0 == 'script/rails' && Rails.env)
