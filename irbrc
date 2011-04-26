@@ -51,15 +51,18 @@ class Object
   end
 end
 # sql query loging
-if defined? Rails
-  require 'logger'
-  ActiveRecord::Base.logger = Logger.new(STDOUT)
-  # somehow ar 2.3.5 on my laptop didn't catch up logger but on desktop all is ok ...
-  ActiveRecord::Base.connection.instance_eval {@logger = ActiveRecord::Base.logger}
-end
+# if defined? Rails
+#   require 'logger'
+#   ActiveRecord::Base.logger = Logger.new(STDOUT)
+#   # somehow ar 2.3.5 on my laptop didn't catch up logger but on desktop all is ok ...
+#   ActiveRecord::Base.connection.instance_eval {@logger = ActiveRecord::Base.logger}
+# end
 def change_log(stream)
   ActiveRecord::Base.logger = Logger.new(stream)
-  ActiveRecord::Base.clear_active_connections!
+  # somehow ar 2.3.5 on my laptop didn't catch up logger but on desktop all is ok ...
+  ActiveRecord::Base.connection.instance_eval {@logger = ActiveRecord::Base.logger}
+  # ActiveRecord::Base.logger = Logger.new(stream)
+  # ActiveRecord::Base.clear_active_connections!
 end
 
 def show_log
