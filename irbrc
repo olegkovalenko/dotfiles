@@ -8,19 +8,21 @@ IRB.conf[:LOAD_MODULES] += ['irb/completion', 'irb/ext/save-history']
 IRB.conf[:PROMPT_MODE] = :SIMPLE
 
 # load gems
-%w[rubygems ap].each do |gem|
+# %w[rubygems awesome_print].each do |gem|
+%w[rubygems].each do |gem|
   begin
     require gem
   rescue LoadError
+    puts "error loading gem #{gem}"
   end
 end
 
 # colorize output
-IRB::Irb.class_eval do
-  def output_value
-    ap @context.last_value, :multiline => false
-  end
-end
+# IRB::Irb.class_eval do
+#   def output_value
+#     ap @context.last_value, :multiline => false
+#   end
+# end
 
 
 class Object
@@ -57,7 +59,7 @@ end
 #   # somehow ar 2.3.5 on my laptop didn't catch up logger but on desktop all is ok ...
 #   ActiveRecord::Base.connection.instance_eval {@logger = ActiveRecord::Base.logger}
 # end
-def change_log(stream)
+def log_to(stream)
   ActiveRecord::Base.logger = Logger.new(stream)
   # somehow ar 2.3.5 on my laptop didn't catch up logger but on desktop all is ok ...
   ActiveRecord::Base.connection.instance_eval {@logger = ActiveRecord::Base.logger}
@@ -66,11 +68,11 @@ def change_log(stream)
 end
 
 def show_log
-  change_log(STDOUT)
+  log_to(STDOUT)
 end
 
 def hide_log
-  change_log(nil)
+  log_to(nil)
 end
 
 def copy_history
