@@ -82,5 +82,5 @@ def copy_history
   puts content
   copy content
 end
-
+Readline.vi_editing_mode
 # load File.dirname(__FILE__) + '/.railsrc' if ($0 == 'irb' && ENV['RAILS_ENV']) || ($0 == 'script/rails' && Rails.env)
