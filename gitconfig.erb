@@ -1,20 +1,33 @@
 [user]
-	name = <%= print("Your Name: "); STDOUT.flush; STDIN.gets.chomp %>
-	email = <%= print("Your Email: "); STDOUT.flush; STDIN.gets.chomp %>
-[alias]
-	co = checkout
+  name = <%= print("Your Name: "); STDOUT.flush; STDIN.gets.chomp %>
+  email = <%= print("Your Email: "); STDOUT.flush; STDIN.gets.chomp %>
 [color]
-	diff = auto
-	status = auto
-	branch = auto
-[core]
-	excludesfile = <%= ENV['HOME'] %>/.gitignore
-	editor = mate_wait
-	autocrlf = input
+  ui = true
+  diff = auto
+  status = auto
+  branch = auto
+[alias]
+  unstage = rm --cached --
+  last = log -1 HEAD
+  ci = commit -v
+  co = checkout
+  l = log --graph --pretty=format':%C(yellow)%h%Cblue%d%Creset %s %C(white) %an, %ar%Creset'
+  lo = log --pretty=oneline --abbrev-commit --graph --decorate
+  staged = diff --cached
+  unstaged = diff
+  current-branch = !git symbolic-ref -q HEAD | sed -e 's|^refs/heads/||'
+  # Usage: git track origin/feature-123-login-form
+  track = checkout -t
+  # search for merge conflict markers
+  mcm = !grep -r '<<<<' * 
+  rh = rebase --hard
+  mffo = merge --ff-only
+  m = merge --no-ff
+[help]
+  autocorrect = 1
+[status]
+  submodule = 1
+[push]
+  default = current
 [apply]
-	whitespace = nowarn
-[format]
-	pretty = %C(yellow)%h%Creset %s %C(red)(%an, %cr)%Creset
-[github]
-	user = <%= print("GitHub Username: "); STDOUT.flush; STDIN.gets.chomp %>
-	token = <%= print("GitHub API Token: "); STDOUT.flush; STDIN.gets.chomp %>
+  whitespace = warn
