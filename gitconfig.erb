@@ -6,16 +6,25 @@
   diff = auto
   status = auto
   branch = auto
+[core]
+	editor = /usr/bin/vim
+	autocrlf = input
+	safecrlf = true
 [alias]
   unstage = rm --cached --
   last = log -1 HEAD
   ci = commit -v
   co = checkout
+  st = status
+  s = status --short
+  hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
   l = log --graph --pretty=format':%C(yellow)%h%Cblue%d%Creset %s %C(white) %an, %ar%Creset'
   lo = log --pretty=oneline --abbrev-commit --graph --decorate
   staged = diff --cached
   unstaged = diff
   current-branch = !git symbolic-ref -q HEAD | sed -e 's|^refs/heads/||'
+  type = cat-file -t
+  dump = cat-file -p
   # Usage: git track origin/feature-123-login-form
   track = checkout -t
   # search for merge conflict markers
@@ -23,6 +32,8 @@
   rh = rebase --hard
   mffo = merge --ff-only
   m = merge --no-ff
+  type = cat-file -t
+  dump = cat-file -p
 [help]
   autocorrect = 1
 [status]
@@ -31,3 +42,5 @@
   default = current
 [apply]
   whitespace = warn
+[merge]
+	tool = /usr/bin/vimdiff
