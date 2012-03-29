@@ -84,3 +84,8 @@ def copy_history
 end
 Readline.vi_editing_mode
 # load File.dirname(__FILE__) + '/.railsrc' if ($0 == 'irb' && ENV['RAILS_ENV']) || ($0 == 'script/rails' && Rails.env)
+class Method; def s; sl = source_location; `head -n #{sl.last} '#{sl.first}' | tail -1`.chomp; end; end
+# e = ERB.new "ok #{1 + 1} ok"
+# s e, :result #=> "def result(b=TOPLEVEL_BINDING)"
+def s(o, n); o.method(n).s.strip; end
+def vs(o, n); sl = o.method(n).source_location; system %Q(tmux send-keys -t :1.1 ':tabnew #{sl.first}' C-m "#{sl.last}G"); end
