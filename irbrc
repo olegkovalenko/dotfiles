@@ -30,7 +30,7 @@ class Object
   def local_methods(obj = self)
     (obj.methods - obj.class.superclass.instance_methods).sort
   end
-  
+
   # print documentation
   #
   #   ri 'Array#pop'
@@ -89,3 +89,9 @@ class Method; def s; sl = source_location; `head -n #{sl.last} '#{sl.first}' | t
 # s e, :result #=> "def result(b=TOPLEVEL_BINDING)"
 def s(o, n); o.method(n).s.strip; end
 def vs(o, n); sl = o.method(n).source_location; system %Q(tmux send-keys -t :1.1 ':tabnew #{sl.first}' C-m "#{sl.last}G"); end
+# in rails console do >> dump_paths_for_vim
+# in vim just :so config/set-paths.vim
+def dump_paths_for_vim(to = 'config/set-paths.vim')
+  csp = $".map {|p| File.dirname(p)}.uniq.join(',')
+  File.open(to, 'w') {|f| f.puts("set path+=#{csp}")}
+end
