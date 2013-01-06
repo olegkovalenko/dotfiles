@@ -82,7 +82,7 @@ def copy_history
   puts content
   copy content
 end
-Readline.vi_editing_mode
+Readline.vi_editing_mode unless defined? JRuby
 # load File.dirname(__FILE__) + '/.railsrc' if ($0 == 'irb' && ENV['RAILS_ENV']) || ($0 == 'script/rails' && Rails.env)
 class Method; def s; sl = source_location; `head -n #{sl.last} '#{sl.first}' | tail -1`.chomp; end; end
 # e = ERB.new "ok #{1 + 1} ok"
@@ -95,3 +95,21 @@ def dump_paths_for_vim(to = 'config/set-paths.vim')
   csp = $".map {|p| File.dirname(p)}.uniq.join(',')
   File.open(to, 'w') {|f| f.puts("set path+=#{csp}")}
 end
+class Object
+  def vim(method_name)
+    file, line = method(method_name).source_location
+    system "vim '#{file}' +#{line}"
+  end
+end
+# Break out of the Bundler jail
+# from https://github.com/ConradIrwin/pry-debundle/blob/master/lib/pry-debundle.rb
+if defined? Bundler
+  Gem.post_reset_hooks.reject! { |hook| hook.source_location.first =~ %r{/bundler/} }
+  Gem::Specification.reset
+  load 'rubygems/custom_require.rb'
+end
+def y(obj) puts obj.to_yaml end if Object.respond_to?(:y)
+
+def tb() ActiveRecord::Base.connection.begin_db_transaction    end
+def tr() ActiveRecord::Base.connection.rollback_db_transaction end
+def tc() ActiveRecord::Base.connection.commit_db_transaction   end
